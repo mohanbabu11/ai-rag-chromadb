@@ -1,0 +1,15 @@
+services:
+  langflow:
+    image: "langflowai/langflow:latest"
+    container_name: langflow
+    ports:
+      - "7861:7861"
+    environment:
+      LANGFLOW_PORT: 7861
+      LANGFLOW_DATABASE_URL: sqlite:///app/data/langflow.db
+    volumes:
+      - ./langflow_data:/app/data
+    restart: unless-stopped
+  
+volumes:
+  langflow_data:

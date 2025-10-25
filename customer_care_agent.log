@@ -1,0 +1,26 @@
+2025-10-24 22:24:50,353 - __main__ - INFO - 🚀 Starting Customer Care Agent API...
+2025-10-24 22:24:50,353 - __main__ - INFO - 🔍 Environment file path: /Users/mvijayagopal/AI Learning/ai-rag-chromadb/.env
+2025-10-24 22:24:50,353 - __main__ - INFO - 🔍 Environment file exists: True
+2025-10-24 22:24:50,353 - __main__ - INFO - 🔍 Google environment variables found: ['GOOGLE_GENAI_API_KEY']
+2025-10-24 22:24:50,353 - __main__ - INFO - 🔑 API Key loaded successfully (length: 39 chars)
+2025-10-24 22:24:50,353 - __main__ - INFO - 🤖 Initializing Customer Care Agent...
+2025-10-24 22:24:50,513 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-24 22:25:03,962 - __main__ - INFO - ✅ Agent initialized successfully!
+2025-10-24 22:28:30,199 - __main__ - INFO - 🚀 Starting server on 0.0.0.0:8000
+2025-10-24 22:28:30,218 - __main__ - INFO - 🚀 Starting Customer Care Agent API...
+2025-10-24 22:28:30,218 - __main__ - INFO - 🔍 Environment file path: /Users/mvijayagopal/AI Learning/ai-rag-chromadb/.env
+2025-10-24 22:28:30,218 - __main__ - INFO - 🔍 Environment file exists: True
+2025-10-24 22:28:30,218 - __main__ - INFO - 🔍 Google environment variables found: ['GOOGLE_GENAI_API_KEY']
+2025-10-24 22:28:30,218 - __main__ - INFO - 🔑 API Key loaded successfully (length: 39 chars)
+2025-10-24 22:28:30,218 - __main__ - INFO - 🤖 Initializing Customer Care Agent...
+2025-10-24 22:28:30,379 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-24 22:29:07,932 - __main__ - INFO - ✅ Agent initialized successfully!
+2025-10-24 22:30:43,048 - __main__ - INFO - 📥 Received query: do you accept cash
+2025-10-24 22:30:43,050 - __main__ - INFO - 🔗 Session ID: 001
+2025-10-24 22:30:57,807 - __main__ - INFO - 📤 Response generated successfully for session: 001
+2025-10-24 22:32:29,413 - __main__ - INFO - 📥 Received query: who is the president
+2025-10-24 22:32:29,413 - __main__ - INFO - 🔗 Session ID: 001
+2025-10-24 22:32:30,682 - __main__ - INFO - 📤 Response generated successfully for session: 001
+2025-10-24 22:32:33,932 - __main__ - INFO - 📥 Received query: who is the president
+2025-10-24 22:32:33,933 - __main__ - INFO - 🔗 Session ID: 001
+2025-10-24 22:32:34,964 - __main__ - INFO - 📤 Response generated successfully for session: 001

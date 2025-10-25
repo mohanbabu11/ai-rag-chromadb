@@ -3,10 +3,10 @@
 from tkinter import END
 from typing import TypedDict, Annotated, Sequence
 from langchain_core.messages import HumanMessage, SystemMessage, BaseMessage, AIMessage
-from langgraph.graph import StateGraph
+from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from knowledge_case import KnowledgeCase
 
 print ("Graph Module")
@@ -20,34 +20,22 @@ class AgentState(TypedDict):
     session_id: str
 
 class CustomerCareAgentGraph:
-    def __init__(self, api_key: str, model: str="gemini-2.5-flash"):
-
+    def __init__(self, api_key: str, model: str="gemini-2.0-flash"):
         self.api_key = api_key
-
-        self.llm = ChatGoogleGenerativeAI(model=model, 
-                                          api_key=api_key, 
-                                          temparature=0.2, 
-                                          max_output_tokens=1024)
-
-
-        self.chat_model = ChatGoogleGenerativeAI(model="models/chat-bison-001", api_key=api_key)
-
+        self.llm = ChatGoogleGenerativeAI(
+            model=model, 
+            google_api_key=api_key, 
+            temperature=0.2, 
+            max_output_tokens=1024
+        )
         self.knowledge_case = KnowledgeCase.create_sample_knowledge_base(api_key=api_key)
         self.graph = self._build_graph()
 
-        self.graph.add_state(
-            name="customer_care_agent",
-            model=self.chat_model,
-            prompt=self.prompt_template,
-            input_keys=["retrieved_context", "query"],
-            output_key="response"
-        )
-
-    def should_retrieve_knowledge(self, state: AgentState) -> bool:
+    def should_retrieve_knowledge(self, state: AgentState) -> str:
         return "retrieve" if state['needs_knowledge'] else "generate"
 
 
-    def _classify_need_for_knowledge(self, state: AgentState) -> None:
+    def _classify_need_for_knowledge(self, state: AgentState) -> AgentState:
         classifier_prompt = ChatPromptTemplate.from_messages([
             ("system", """You are a query classifier. Determine if the customer query requires
             looking up company policies, product information, or specific facts.
@@ -94,44 +82,45 @@ class CustomerCareAgentGraph:
     
     def _generate_response(self, state: AgentState) -> AgentState:
         if state["needs_knowledge"] and state["retrieved_context"]:
-            prompt = f"""Using the following retrieved context from the knowledge base, answer the customer query accurately.
+            prompt = ChatPromptTemplate.from_messages([
+                ("system", """You are a helpful customer service agent. Using the following retrieved context from the knowledge base, answer the customer query accurately.
 
-            Important:
-            - If the context contains the answer, use it to respond.
-            - If the context does NOT contain the answer, acknowledge that you don't have the information.
-            - Always maintain a polite and professional tone.
+                Important:
+                - If the context contains the answer, use it to respond.
+                - If the context does NOT contain the answer, acknowledge that you don't have the information.
+                - Always maintain a polite and professional tone.
+                
+                Context: {context}"""),
+                ("human", "{query}")
+            ])
             
-            Context: {state["retrieved_context"]}
-            Query: {state["query"]}
-            """
-            response = self.llm.invoke({"prompt": prompt})
-            return {
-                **state,
-                "response": response,
-                "messages": state["messages"] + [AIMessage(content="[Generated final response]")]
-            }
+            response = self.llm.invoke(prompt.format_messages(
+                context=state["retrieved_context"],
+                query=state["query"]
+            ))
         else:
-            prompt = f"""Answer the customer query accurately and politely.
-
-            Query: {state["query"]}
-            """
-            response = self.llm.invoke({"prompt": prompt})
-            return {
-                **state,
-                "response": response,
-                "messages": state["messages"] + [AIMessage(content="[Generated final response]")]
-            }
+            prompt = ChatPromptTemplate.from_messages([
+                ("system", "You are a helpful customer service agent. Answer the customer query accurately and politely."),
+                ("human", "{query}")
+            ])
+            
+            response = self.llm.invoke(prompt.format_messages(query=state["query"]))
         
+        return {
+            **state,
+            "response": response.content,
+            "messages": state["messages"] + [AIMessage(content="[Generated final response]")]
+        }
 
     def _build_graph(self) -> StateGraph:
         workflow = StateGraph(AgentState)
         workflow.add_node("classify", self._classify_need_for_knowledge)
         workflow.add_node("retrieve", self._retrieve_knowledge)
-        workflow.add_edge("generate", self._generate_response)
+        workflow.add_node("generate", self._generate_response)
 
         workflow.set_entry_point("classify")
 
-        workflow.add_conditional_edge("classify", 
+        workflow.add_conditional_edges("classify", 
                                       self.should_retrieve_knowledge, 
                                       {
                                           "retrieve": "retrieve",
@@ -142,3 +131,27 @@ class CustomerCareAgentGraph:
         workflow.add_edge("generate", END)
 
         return workflow.compile()
+    
+    def invoke(self, initial_state: AgentState) -> AgentState:
+        """Invoke the graph synchronously"""
+        return self.graph.invoke(initial_state)
+    
+    async def aprocess_query(self, query: str, session_id: str = None) -> dict:
+    
+        initial_state = {
+            "messages": [HumanMessage(content=query)],
+            "query": query,
+            "retrieved_context": "",
+            "needs_knowledge": False,
+            "response": "",
+            "session_id": session_id or ""
+        }
+
+        result = await self.graph.ainvoke(initial_state)
+
+        return {
+            "response": result["response"],
+            "session_id": result["session_id"],
+            "used_knowledge_base": result["needs_knowledge"],
+            "context_retrieved": bool(result["retrieved_context"])
+        }

@@ -7,7 +7,7 @@ import json
 import time
 
 # API base URL
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:3000"
 
 def test_api_request(query_data, description=""):
     """Test a single API request"""

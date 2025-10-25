@@ -45,14 +45,14 @@
 
 ### Basic POST request:
 ```bash
-curl -X POST "http://localhost:8000/api/query" \
+curl -X POST "http://localhost:3000/api/query" \
      -H "Content-Type: application/json" \
      -d '{"query": "What is your return policy?"}'
 ```
 
 ### POST request with session:
 ```bash
-curl -X POST "http://localhost:8000/api/query" \
+curl -X POST "http://localhost:3000/api/query" \
      -H "Content-Type: application/json" \
      -d '{
        "query": "How can I track my order?",
@@ -62,7 +62,7 @@ curl -X POST "http://localhost:8000/api/query" \
 
 ### Complete POST request:
 ```bash
-curl -X POST "http://localhost:8000/api/query" \
+curl -X POST "http://localhost:3000/api/query" \
      -H "Content-Type: application/json" \
      -d '{
        "query": "What payment methods do you accept?",
@@ -79,7 +79,7 @@ import requests
 
 # Basic request
 response = requests.post(
-    "http://localhost:8000/api/query",
+    "http://localhost:3000/api/query",
     json={
         "query": "What is your return policy?"
     }
@@ -87,7 +87,7 @@ response = requests.post(
 
 # Request with session
 response = requests.post(
-    "http://localhost:8000/api/query",
+    "http://localhost:3000/api/query",
     json={
         "query": "How can I track my order?",
         "session_id": "user-session-123"
@@ -105,7 +105,7 @@ import asyncio
 async def query_agent():
     async with httpx.AsyncClient() as client:
         response = await client.post(
-            "http://localhost:8000/api/query",
+            "http://localhost:3000/api/query",
             json={
                 "query": "What are your customer support hours?",
                 "session_id": "async-session-001"
@@ -122,7 +122,7 @@ print(result)
 
 ### Using fetch:
 ```javascript
-const response = await fetch('http://localhost:8000/api/query', {
+const response = await fetch('http://localhost:3000/api/query', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -141,7 +141,7 @@ console.log(result);
 ```javascript
 const axios = require('axios');
 
-const response = await axios.post('http://localhost:8000/api/query', {
+const response = await axios.post('http://localhost:3000/api/query', {
   query: 'How can I track my order?',
   session_id: 'axios-session-456',
   customer_id: 'customer-123'

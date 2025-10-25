@@ -1,6 +1,5 @@
 #connect to model and create graph. 
 # handles customer query and returns the answer
-from tkinter import END
 from typing import TypedDict, Annotated, Sequence
 from langchain_core.messages import HumanMessage, SystemMessage, BaseMessage, AIMessage
 from langgraph.graph import StateGraph, END

@@ -12,7 +12,9 @@ class KnowledgeCase:
                  api_key: str, 
                  persist_directory: str="./data/chroma_db", 
                  collection_name: str="knowledge_case" ):
-        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", api_key=api_key)
+        print ("Initializing Knowledge Case")
+        print("api_key:", api_key)
+        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=api_key)
 
         self.vectorstore = Chroma(collection_name=collection_name,
                                   embedding_function=self.embeddings,
@@ -40,6 +42,8 @@ class KnowledgeCase:
     
     @staticmethod
     def create_sample_knowledge_base(api_key: str) -> "KnowledgeCase":
+        print ("api key in create_sample_knowledge_base:", api_key)
+
         kc = KnowledgeCase(api_key=api_key)
 
         sample_documents = [
@@ -56,7 +60,7 @@ class KnowledgeCase:
                 metadata={"source": "order_tracking.txt"}
             ),
             Document(
-                page_content="We accept the following payment methods: Visa, Mastercard, American Express, Discover, PayPal, Apple Pay, and Google Pay. All transactions are secured with 256-bit SSL encryption.",
+                page_content="We accept the following payment methods: Visa, Mastercard, American Express, Discover, PayPal, Apple Pay, and Google Pay. We do not accept other form of payments.All transactions are secured with 256-bit SSL encryption.",
                 metadata={"source": "payment_methods.txt"}
             ),
             Document(
